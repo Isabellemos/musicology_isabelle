@@ -1,0 +1,650 @@
+---
+title: "Isabelle Mos"
+output: 
+  flexdashboard::flex_dashboard:  
+    storyboard: true
+    self_contained: false
+    theme: 
+      version: 4
+      bootswatch: minty
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(spotifyr)
+library(compmus)
+library(ggdendro)
+library(tidymodels)
+library(gridExtra)
+
+
+bicep <- get_playlist_audio_features("", "45igKB0TM7fCIDJVo8dWpZ")
+bodzin <- get_playlist_audio_features("", "4DgGHEYzIbiKwBZaXdkVvF")
+
+
+
+bicep_2 <- get_artist_audio_features('Bicep') 
+bodzin_2 <- get_artist_audio_features('Stephan Bodzin')
+
+st_artists <- rbind(bicep_2, bodzin_2)
+
+apricots_bicep <-
+  get_tidy_audio_analysis("0WfOuXw05LJq4ik1lVvTzi") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+river_bodzin <-
+  get_tidy_audio_analysis("215z00CrTsmjBop1O4kbWz") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+
+
+  
+
+
+
+```
+
+### Introduction
+
+I will be analyzing the songs of the duo Bicep and compare this to the songs of Stephan Bodzin. 
+Both Bicep and Bodzin are an electronic artists (in the techno genre) and have a very different and their own characteristic style. 
+One can immediately recognize a song from Bicep or a song from Stephan Bodzin. 
+Bodzins songs typically have a baseline driven, emotive and have a hypnotic synth.
+Biceps songs mostly have a shuffling beat, subtle bass and soaring vocals, a surefire way to get any rave absolutely heaving.
+
+Techno is a genre of electronic dance music, characterized by a repetitive four on the floor beat, which is generally produced for use in a continuous DJ set. The central rhythm is often in 4/4 and the tempo typically varies between 120 and 150 beats per minute (bpm). Artists may use electronic instruments such as drum machines, sequencers, and synthesizers.
+
+However these artists have a very different style these artists are both my all time favourites and I can keep listening to them. I have seen both artists live. They play their music live (not just mixing their music) and both times they delivered an amazing rave with everyone dancing.  
+Bicep tends to have a  more 'calm' vibe whereas Bodzin plays a bit harder, but both artists have great party music. Therefore, I want to investigate if there are any similarities between these artists, so I can find out if there are specific features which makes me love them. I will do this by analyzing their Spotify API for simmilarities and differences in parameters. 
+
+My corpus consists of the two playlists I made, one with Bicep's songs and one with Stephan Bodzin's songs. 
+
+***
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/45igKB0TM7fCIDJVo8dWpZ?utm_source=generator" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/4DgGHEYzIbiKwBZaXdkVvF?utm_source=generator" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe> 
+
+
+
+### Global orientation on Bicep and Bodzin
+```{r}
+
+st_artists %>% 
+ggplot(aes(x = valence, y = energy, color = artist_name)) +
+  geom_jitter() +
+  geom_vline(xintercept = 0.5) +
+  geom_hline(yintercept = 0.5) +
+  scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 1)) +
+  annotate('text', 0.25 / 2, 0.95, label = "Turbulent/Angry", fontface = "bold") +
+  annotate('text', 1.75 / 2, 0.95, label = "Happy/Joyful", fontface = "bold") +
+  annotate('text', 1.75 / 2, 0.05, label = "Chill/Peaceful", fontface = "bold") +
+  annotate('text', 0.25 / 2, 0.05, label = "Sad/Depressing", fontface = "bold")
+
+```
+
+
+
+***
+
+This graph gives a global analysis of the overall atmoshphere of the music of both artists. This is measured in terms of energy and valence.
+
+According to the Spotify API, **Energy** is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.
+
+**Valence** is a measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
+
+
+Both Bicep's and Bodzin's songs are mostly in the Turbulent / Angry section. Bodzins' songs also often lay in the sad/depressing segment. This is interesting since they both play at big festivals where the vibe is definitely not depressing. It also shows that almost all of their songs have a high energy: most of them around the 0.75. Overall both artists have a relatively low valence. 
+
+A small segment of their songs is in the happy/joyful segment though, but this is not significant. Therefore from this graph I can conclude that both artists have their 'Turbulent' and 'Angry' atmosphere in common, as well as a high energy. 
+
+
+
+
+### Self-Similarity 
+
+```{r}
+icebowl <-
+  get_tidy_audio_analysis("4wPM9pPNr7tXO7CGCVwYoq") %>% # Change URI.
+  compmus_align(bars, segments) %>%                     # Change `bars`
+  select(bars) %>%                                      #   in all three
+  unnest(bars) %>%                                      #   of these lines.
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "rms", norm = "euclidean"              # Change summary & norm.
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "rms", norm = "euclidean"              # Change summary & norm.
+      )
+  )
+
+icebowl_1 <- icebowl %>%
+  compmus_self_similarity(timbre, "cosine") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "") + ggtitle("Icebowl by Bicep - timbre SSM")
+
+icebowl_2 <- icebowl %>%
+  compmus_self_similarity(pitches, "cosine") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "") + ggtitle("Icebowl by Bicep - chroma SSM")
+
+
+river <-
+  get_tidy_audio_analysis("7b2YjMWa5SzAXQHcW3mybO") %>% # Change URI.
+  compmus_align(bars, segments) %>%                     # Change `bars`
+  select(bars) %>%                                      #   in all three
+  unnest(bars) %>%                                      #   of these lines.
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "rms", norm = "euclidean"              # Change summary & norm.
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "rms", norm = "euclidean"              # Change summary & norm.
+      )
+  )
+
+river_1 <- river %>%
+  compmus_self_similarity(timbre, "cosine") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "") + ggtitle("River by Stephan Bodzin - timbre SSM") 
+
+river_2 <- river %>%
+  compmus_self_similarity(pitches, "cosine") %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  scale_fill_viridis_c(guide = "none") +
+  theme_classic() +
+  labs(x = "", y = "") + ggtitle("River by Stephan Bodzin - chroma SSM") 
+
+
+grid.arrange(icebowl_1, icebowl_2, river_1, river_2)
+
+
+
+
+```
+
+***
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4wPM9pPNr7tXO7CGCVwYoq?utm_source=generator" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/7b2YjMWa5SzAXQHcW3mybO?utm_source=generator" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
+On the left are four self-similarity matrices with a song from both artists. An SSM says something about how points in time compare musically to other points in time within the same song. 
+
+One of the reasons I keep wanting to listen to both artists is because I never get tired from listening to their songs, they never bore me. Therefore it is interesting to look at their self similarity matrices, which shows whether a song has a lot of differing parts or not. A lot of difference within a song could clarify why they never get boring. 
+
+In a self-similarity matrix, yellow shows variance and more blue shows similarity. These self similarity matrices focus on 1) timbre and on 2) chroma. According to the Spotify API, **timbre** is the quality of a musical note or sound that distinguishes different types of musical instruments, or voices. It is a complex notion also referred to as sound color, texture, or tone quality, and is derived from the shape of a segment’s spectro-temporal surface, independently of pitch and loudness. The second SSM looks at **pitches**. Pitch content is given by a “chroma” vector, corresponding to the 12 pitch classes C, C#, D to B, with values ranging from 0 to 1 that describe the relative dominance of every pitch in the chromatic scale. For example a C Major chord would likely be represented by large values of C, E and G (i.e. classes 0, 4, and 7).
+
+
+**Ice Bowl** 
+The first SSM's are of one of my favourite songs of Bicep, Icebowl. It's timbre SSM is quite messy with small squares, big squares and rectangles in it. This refers to a lot of differene within it's timbre. It's chroma SSM is fairly yellow as well (referring to variety) and there are no equal square patterns in it. This indicates a lot of variance and little repetition during this song.
+
+
+**River**
+The second and third SSM are of the song River by Stephan Bodzin. The timbre SSM is less messy: the left, right, top and bottom ends look quite the similar and show a bit lighter colors which indicates more heterogeinity. The middle has small squares all showing darker colors indicating more similarity. Especially at the end of the song there is more difference: there is a clear yellow band at the end of the graph. It's pitch SSM is super yellow, so there is a large variance in chroma features throughout this song. 
+
+It is clear that both SSM's from the songs Icebowl and River have shown a lot of variance. This is shown by looking at the SSM for timbre and the SSM for pitches. This variance could be a reason why I can keep listening to these songs!
+
+
+### Chromagram for outliers 
+
+```{r}
+
+glue <-
+  get_tidy_audio_analysis("2aJDlirz6v2a4HREki98cP") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+glue_graph <- glue %>%
+  mutate(pitches = map(pitches, compmus_normalise, "chebyshev")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c() + ggtitle('Glue - Bicep')
+
+
+
+singularity <-
+  get_tidy_audio_analysis("0yuJtvXsapVOQfNDYxQ5mw") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+singularity_graph <- singularity %>%
+  mutate(pitches = map(pitches, compmus_normalise, "chebyshev")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c() + ggtitle("Singularity - Bodzin")
+
+grid.arrange(glue_graph, singularity_graph)
+
+
+```
+
+***
+On the left are two chromagrams outliers, one of both artists. I think of these songs as ‘outliers’ because they are by far the most popular songs of both artists so I thought it would be interesting to look if there are certain extraordinary properties or similarities within their chromagrams. 
+
+**Glue** First chromagram is from the song Glue by Bicep. In the first part of the song, until 80 seconds, a lot of different keys are lighting up in the chromagram: A, G#|Ab, G, F#|Gb. This might be because the first part of the song consists of a break beat.  
+
+as the song is building up more elements are added (a high voice and other electronic sounds). This makes the chromagram light up for others keys as well: D light up around 90 seconds, and E lights up a little bit after 100 seconds.
+
+An extraordinary part in the chromagram is the yellow (high magnitude) 'band' in the middle of the chromagram. This represents the high-pitched vocals, which is characteristic of the song Glue. 
+
+**Singularity** The second chromagram is of the most popular Stephan Bodzin song, namely ’Singularity’. It is clear from the chromagram that the throughout the whole song there is a high magnitude on the G#|Ab, A and B notes. This forms a yellow ‘band’ on the top of the chromagram. This represents the repeating bass-synth rhythm which is only composed of two chords plus the typical Bodzin-style synthesizers (this will be very clear when you listen to the song). 
+What makes this song so special is that the built-up is actually very simple and keeps repeating; there are some high pitches throughout the songs but the basis is really these two chords. This makes the chromagram way more clear than the Bicep chromagram. 
+
+
+
+### Keygrams and histogram of keys
+
+```{r}
+
+circshift <- function(v, n) {
+  if (n == 0) v else c(tail(v, n), head(v, -n))
+}
+
+#      C     C#    D     Eb    E     F     F#    G     Ab    A     Bb    B
+major_chord <-
+  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    0,    0)
+minor_chord <-
+  c(   1,    0,    0,    1,    0,    0,    0,    1,    0,    0,    0,    0)
+seventh_chord <-
+  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    1,    0)
+
+major_key <-
+  c(6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88)
+minor_key <-
+  c(6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17)
+
+
+key_templates <-
+  tribble(
+    ~name, ~template,
+    "Gb:maj", circshift(major_key, 6),
+    "Bb:min", circshift(minor_key, 10),
+    "Db:maj", circshift(major_key, 1),
+    "F:min", circshift(minor_key, 5),
+    "Ab:maj", circshift(major_key, 8),
+    "C:min", circshift(minor_key, 0),
+    "Eb:maj", circshift(major_key, 3),
+    "G:min", circshift(minor_key, 7),
+    "Bb:maj", circshift(major_key, 10),
+    "D:min", circshift(minor_key, 2),
+    "F:maj", circshift(major_key, 5),
+    "A:min", circshift(minor_key, 9),
+    "C:maj", circshift(major_key, 0),
+    "E:min", circshift(minor_key, 4),
+    "G:maj", circshift(major_key, 7),
+    "B:min", circshift(minor_key, 11),
+    "D:maj", circshift(major_key, 2),
+    "F#:min", circshift(minor_key, 6),
+    "A:maj", circshift(major_key, 9),
+    "C#:min", circshift(minor_key, 1),
+    "E:maj", circshift(major_key, 4),
+    "G#:min", circshift(minor_key, 8),
+    "B:maj", circshift(major_key, 11),
+    "D#:min", circshift(minor_key, 3)
+  )
+
+
+sundial <-
+  get_tidy_audio_analysis("3gCurfVJRI2d5vov0eF6ka") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  )
+
+sundial_keygram <- sundial %>% 
+  compmus_match_pitch_template(
+    key_templates,         # Change to chord_templates if descired
+    method = "euclidean",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "") + ggtitle("Sundial by Bicep, keygram") + scale_fill_viridis_c('energy')
+
+sputnik <-
+  get_tidy_audio_analysis("6fZmkmoUDRU5rDBbvNyLna") %>%
+  compmus_align(sections, segments) %>%
+  select(sections) %>%
+  unnest(sections) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      )
+  )
+
+sputnik_keygram <- sputnik %>% 
+  compmus_match_pitch_template(
+    key_templates,         # Change to chord_templates if descired
+    method = "euclidean",  # Try different distance metrics
+    norm = "manhattan"     # Try different norms
+  ) %>%
+  ggplot(
+    aes(x = start + duration / 2, width = duration, y = name, fill = d)
+  ) +
+  geom_tile() +
+  theme_minimal() +
+  labs(x = "Time (s)", y = "") + ggtitle("Sputnik by Bodzin, keygram") + scale_fill_viridis_c('energy')
+
+
+
+bicep <- get_playlist_audio_features("", "45igKB0TM7fCIDJVo8dWpZ")
+bodzin <- get_playlist_audio_features("", "4DgGHEYzIbiKwBZaXdkVvF")
+  
+  
+bicep_histo <- bicep %>%
+  count(key_mode, sort = TRUE) %>%
+  ggplot(aes(reorder(key_mode, n), n))+
+  geom_col(fill = "#6495ED") + coord_flip() + labs() + ggtitle("histogram of keys - Bicep ")
+
+bodzin_histo <- bodzin %>%
+  count(key_mode, sort = TRUE) %>%
+  ggplot(aes(reorder(key_mode, n), n))+
+  geom_col(fill = "#6495ED") + coord_flip() + labs() + ggtitle("histogram of keys - Bodzin")
+
+
+grid.arrange(bicep_histo, bodzin_histo)
+grid.arrange(sundial_keygram, sputnik_keygram)
+```
+
+
+***
+Below are two histograms of keys for both Bicep and Bodzin playlists. Clearly, the C minor and A minor are significantly prevailing in Biceps music.According to Pauer, C minor is the key that is expressive of softness, longing, sadness, solemnity, dignified earnestness, and a passionate intensity. It lends itself most effectively to the portraiture of the supernatural (source https://interlude.hk/feel-key-c-minor/#:~:text=According%20to%20Pauer%2C%20C%20minor,the%20portraiture%20of%20the%20supernatural).
+
+The G major and A# minor are prevailing in Bodzins music. G major is expressing the Serious, Magnificent and fantasy (source https://ledgernote.com/blog/interesting/musical-key-characteristics-emotions/). If would say this is reflected in Bodzins' music: his songs sound extraterrestrial which I would say is mainly caused by his characteristic base sound. 
+
+Also I plotted two keygrams, one of both artists, to see whether these songs reflect the most typical keys of the artist. The keygram of Sundial shows a lot of yellow, which means a lot of energy in different keys. This song is not a typical one since it does not reflect the C minor and A minor clearly. Therefore Sundial can be seen as an outlier. 
+
+The keygram of Sputnik 
+
+### Tempograms
+
+```{r}
+drift <- get_tidy_audio_analysis("5xvHKh0QAbzYUUiazFGnAD")
+
+drift %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic() + scale_fill_viridis_c('tempo')
+
+```
+
+***
+
+This is an extraordinary tempogram of outlier 'Drift' by Bicep. The line throughout the whole tempogram makes it very interesting to analyze. 
+
+- Throughout the whole song, until +- 200 s, the tempo remains around the 127 bpm. 
+- After 200s, near the end of the song, the tempo suddenly goes all over the place. It is not possible to measure a specific tempo anymore. 
+
+The song Drift is built up from the repeating, mysterious sounding rhythm. This rhythms goes on throughout the whole song and there is no voice in the first part. This is clearly visible from the tempogram, which remains mostly the same looking at the bright yellow band. 
+
+However near the end of the song another sound (a very high voice / sound going like 'whoooooo') is added. This sound clearly has a slower tempo than the main rhythm. Because of these two different tempo's suddenly mixing together, the tempogram goes at all kinds of different tempo's. I think this is why the end of the graph is messy. 
+
+
+
+
+
+### Clustering
+
+```{r}
+
+bodzin_3 <-
+  get_playlist_audio_features("", "4DgGHEYzIbiKwBZaXdkVvF") %>%
+  add_audio_analysis() %>%
+  mutate(
+    segments = map2(segments, key, compmus_c_transpose),
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      ),
+    timbre =
+      map(
+        segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  ) %>%
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) %>%
+  mutate_at(vars(pitches, timbre), map, bind_rows) %>%
+  unnest(cols = c(pitches, timbre))
+
+
+bodzin_juice <-
+  recipe(
+    track.name ~
+      danceability +
+      energy +
+      loudness +
+      speechiness +
+      acousticness +
+      instrumentalness +
+      liveness +
+      valence +
+      tempo +
+      duration +
+      
+      C + `C#|Db` + D + `D#|Eb` +
+      E + `F` + `F#|Gb` + G +
+      `G#|Ab` + A + `A#|Bb` + B +
+      c01 + c02 + c03 + c04 + c05 + c06 +
+      c07 + c08 + c09 + c10 + c11 + c12,
+    data = bodzin_3
+  ) %>%
+  step_center(all_predictors()) %>%
+  step_scale(all_predictors()) %>% 
+  # step_range(all_predictors()) %>% 
+  prep(bodzin_3 %>% mutate(track.name = str_trunc(track.name, 20))) %>%
+  juice() %>%
+  column_to_rownames("track.name")
+
+bodzin_dist <- dist(bodzin_juice, method = "euclidean")
+
+bidzin_dendo <- bodzin_dist %>% 
+  hclust(method = "single") %>% # Try single, average, and complete.
+  dendro_data() %>%
+  ggdendrogram()
+
+
+
+
+
+bicep_3 <-
+  get_playlist_audio_features("", "45igKB0TM7fCIDJVo8dWpZ") %>% 
+  add_audio_analysis() %>%
+  mutate(
+    segments = map2(segments, key, compmus_c_transpose),
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      ),
+    timbre =
+      map(
+        segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  ) %>%
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) %>%
+  mutate_at(vars(pitches, timbre), map, bind_rows) %>%
+  unnest(cols = c(pitches, timbre))
+
+
+bicep_juice <-
+  recipe(
+    track.name ~
+      danceability +
+      energy +
+      loudness +
+      speechiness +
+      acousticness +
+      instrumentalness +
+      liveness +
+      valence +
+      tempo +
+      duration +
+      
+      C + `C#|Db` + D + `D#|Eb` +
+      E + `F` + `F#|Gb` + G +
+      `G#|Ab` + A + `A#|Bb` + B +
+      c01 + c02 + c03 + c04 + c05 + c06 +
+      c07 + c08 + c09 + c10 + c11 + c12,
+    data = bicep_3
+  ) %>%
+  step_center(all_predictors()) %>%
+  step_scale(all_predictors()) %>% 
+  # step_range(all_predictors()) %>% 
+  prep(bicep_3 %>% mutate(track.name = str_trunc(track.name, 20))) %>%
+  juice() %>%
+  column_to_rownames("track.name")
+
+
+bicep_dist <- dist(bicep_juice, method = "euclidean")
+
+bicep_dendo <- bicep_dist %>% 
+  hclust(method = "single") %>% # Try single, average, and complete.
+  dendro_data() %>%
+  ggdendrogram()
+
+
+grid.arrange(bidzin_dendo, bicep_dendo)
+
+
+```
+
+***
+To analyse similarity within the music of both artists I created two dendrograms, one of the Bodzin (left) and one of the Bicep playlist (right). 
+These dendrograms use the track level features of timbre, danceability, energy, loudness, speechiness, acousticness, instrumentalness, valence, tempo and duration to see if these clusters would form.
+
+Within the Bodzin dendogram there are some small clusters. For example Collider, Breathe and LLL form a cluster. Some other small cluster of around 2 / 3 songs are in the dendogram, but this is nothing of significant similarity. 
+
+The Biceo dendogram shows the same type of smaller clustering.Here, most cluster are even 2 songs. 
+
+Clearly, both dendograms don't show any big clustering of songs. This shows that within both artists' music, songs differ quite a lot from one another if we look at a combination of Spotify API characteristics. 
+
+
+
+
+### Conclusion and Discussion
+
+
+***
+From the research done in this portfolio, I can conclude several things about the similarities between Bodzin’s and Bicep’s music, and got to know more about what I appreciate about these artists. 
+
+First of all, the Valence / Energy measure is very similar in both artist. This makes the atmosphere of their music tend towards ‘angry and turbulent’. 
+
+Another correspondence in both Bicep’s and Bodzin’s music could be seen from their SSM’s. Their music shows a lot of difference within the songs. This is visible in the SSM on timbre and the SSM on chroma. I interpret this variance as a reason that I can keep listening to their songs. 
+
+From the dendrograms was visible that there is not much clustering between the songs of both of both artists, which means that the songs of both artists don’t sound similar. This could be another reason why the music keeps exciting me. 
+
+Only from the key grams I could not find a clear similarity between the artists: the C minor and A minor are significantly prevailing in Biceps music. The G major and A# minor are prevailing in Bodzins music. 
+
+
+
+Sources:
+
+1. https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features 
+2. https://interlude.hk/feel-key-cminor#:~:text=According%20to%20Pauer%2C%20C%20minor,the%20portraiture%20of%20the%20supernatural
+
+3. https://ledgernote.com/blog/interesting/musical-key-characteristics-emotions/ 
+
