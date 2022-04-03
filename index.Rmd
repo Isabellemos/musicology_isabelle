@@ -51,18 +51,21 @@ river_bodzin <-
 
 ### Introduction
 
+**Introducing my theme**
 For my portfolio, I will be analyzing the songs of two of my alltime favourite artists: the duo Bicep and Stephan Bodzin. 
 
 Both Bicep and Stephan Bodzin are an electronic artists. Their music is in the techno genre. They both have their own characteristic style. One can immediately recognize a song from Bicep or a song from Stephan Bodzin.
 
 Bodzins songs typically are baseline driven, emotive and have a hypnotic synth. Biceps songs often have a shuffling beat, subtle bass and soaring vocals, a surefire way to get any rave absolutely heaving.
 
-Techno is a genre of electronic dance music, characterized by a repetitive four on the floor beat, which is generally produced for use in a continuous DJ set. The central rhythm is often in 4/4 and the tempo typically varies between 120 and 150 beats per minute (bpm). Artists may use electronic instruments such as drum machines, sequencers, and synthesizers.
+**Techno, Bodzin and Bicep**
+Techno is a genre of electronic dance music, characterized by a repetitive four on the floor beat, which is generally produced for use in a continuous DJ set. The central rhythm is often in 4/4 and the tempo typically varies between 120 and 150 beats per minute (bpm). Artists may use electronic instruments such as drum machines, sequencers, and synthesizers (source 4).
 
-However these artists have a very different style, they are both one of my favourites, and I can keep listening to them at any moment of day. I have seen both artists live, they play their music live (i.e. not just mixing their music but live performing it) and both times they delivered an amazing rave with everyone dancing.  
+Even though they are in the same genre, these artists have a very different style. Both are one of my favourites, and I can keep listening to them at any moment of day. I have seen both artists live, they play their music live (i.e. not just mixing their music but live performing it) and both times they delivered an amazing rave with everyone dancing. I wonder how this similar feeling can be caused by two artists that play such different music.  
 
-I want to investigate if there are any similarities between these artists, so I can find out if there are specific features which makes me love them. I will do this by analyzing their Spotify API for similarities and differences in different parameters. 
+Therefore, I want to investigate if there are any similarities in the music of these artists, so I can find out if there are specific features which makes me love them. I will do this by analyzing the Spotify API for similarities and differences in different parameters. 
 
+**Corpus** 
 My corpus consists of two playlists I made, one with Bicep's music and one with Stephan Bodzin's music. In total these are 55 songs.   
 
 ***
@@ -229,10 +232,6 @@ grid.arrange(icebowl_1, icebowl_2, river_1, river_2)
 ```
 
 ***
-<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4wPM9pPNr7tXO7CGCVwYoq?utm_source=generator" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
-
-<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/7b2YjMWa5SzAXQHcW3mybO?utm_source=generator" width="100%" height="380" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
-
 On the left are four self-similarity matrices with a song from both artists. An SSM says something about how points in time compare musically to other points in time within the same song. 
 
 One of the reasons I keep wanting to listen to both artists is because I never get tired from listening to their songs, they never bore me. Therefore it is interesting to look at their self similarity matrices, which shows whether a song has a lot of differing parts or not. A lot of difference within a song could clarify why they never get boring. 
@@ -248,6 +247,10 @@ The first SSM's are of one of my favourite songs of Bicep, Icebowl. It's timbre 
 The second and third SSM are of the song River by Stephan Bodzin. The timbre SSM is less messy: the left, right, top and bottom ends look quite the similar and show a bit lighter colors which indicates more heterogeinity. The middle has small squares all showing darker colors indicating more similarity. Especially at the end of the song there is more difference: there is a clear yellow band at the end of the graph. It's pitch SSM is super yellow, so there is a large variance in chroma features throughout this song. 
 
 It is clear that both SSM's from the songs Icebowl and River have shown a lot of variance. This is shown by looking at the SSM for timbre and the SSM for pitches. This variance could be a reason why I can keep listening to these songs!
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/7b2YjMWa5SzAXQHcW3mybO?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4wPM9pPNr7tXO7CGCVwYoq?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
 
 
 ### Chromagram for outliers 
@@ -659,10 +662,10 @@ From the dendrograms (made of features: danceability, energy, loudness, speechin
 Lastly, From the key grams I could not find a clear similarity between the artists: the C minor and A minor are significantly prevailing in Biceps music. The G major and A# minor are prevailing in Bodzins music. 
 
 
-
 Sources:
 
 1. https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features 
 2. https://interlude.hk/feel-key-cminor#:~:text=According%20to%20Pauer%2C%20C%20minor,the%20portraiture%20of%20the%20supernatural
 3. https://ledgernote.com/blog/interesting/musical-key-characteristics-emotions/ 
+4. https://nl.wikipedia.org/wiki/Techno 
 
