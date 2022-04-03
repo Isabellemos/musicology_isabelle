@@ -44,9 +44,6 @@ river_bodzin <-
 
 
   
-
-
-
 ```
 
 ### Introduction
@@ -92,8 +89,6 @@ ggplot(aes(x = valence, y = energy, color = artist_name)) +
   annotate('text', 0.25 / 2, 0.05, label = "Sad/Depressing", fontface = "bold")
 
 ```
-
-
 
 ***
 
@@ -648,7 +643,7 @@ These dendrograms use the track level features of timbre, danceability, energy, 
 
 Within the Bodzin dendogram there are some small clusters. For example Collider, Breathe and LLL form a cluster. Some other small cluster of around 2 / 3 songs are in the dendogram, but this is nothing of significant similarity. 
 
-The Bicep dendogram shows the same type of smaller clustering.Here, most cluster are even 2 songs. 
+The Bicep dendogram shows the same type of smaller clustering. Here, most cluster are even 2 songs. 
 
 Clearly, both dendograms don't show any big clustering of songs. This shows that within both artists' music, songs differ quite a lot from one another if we look at a combination of Spotify API characteristics. 
 
