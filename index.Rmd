@@ -1,5 +1,5 @@
 ---
-title: "Isabelle Mos"
+title: "Computational musicology: Bicep and Bodzin - Isabelle Mos - 12282448"
 output: 
   flexdashboard::flex_dashboard:  
     storyboard: true
@@ -51,18 +51,19 @@ river_bodzin <-
 
 ### Introduction
 
-I will be analyzing the songs of the duo Bicep and compare this to the songs of Stephan Bodzin. 
-Both Bicep and Bodzin are an electronic artists (in the techno genre) and have a very different and their own characteristic style. 
-One can immediately recognize a song from Bicep or a song from Stephan Bodzin. 
-Bodzins songs typically have a baseline driven, emotive and have a hypnotic synth.
-Biceps songs mostly have a shuffling beat, subtle bass and soaring vocals, a surefire way to get any rave absolutely heaving.
+For my portfolio, I will be analyzing the songs of two of my alltime favourite artists: the duo Bicep and Stephan Bodzin. 
+
+Both Bicep and Stephan Bodzin are an electronic artists. Their music is in the techno genre. They both have their own characteristic style. One can immediately recognize a song from Bicep or a song from Stephan Bodzin.
+
+Bodzins songs typically are baseline driven, emotive and have a hypnotic synth. Biceps songs often have a shuffling beat, subtle bass and soaring vocals, a surefire way to get any rave absolutely heaving.
 
 Techno is a genre of electronic dance music, characterized by a repetitive four on the floor beat, which is generally produced for use in a continuous DJ set. The central rhythm is often in 4/4 and the tempo typically varies between 120 and 150 beats per minute (bpm). Artists may use electronic instruments such as drum machines, sequencers, and synthesizers.
 
-However these artists have a very different style these artists are both my all time favourites and I can keep listening to them. I have seen both artists live. They play their music live (not just mixing their music) and both times they delivered an amazing rave with everyone dancing.  
-Bicep tends to have a  more 'calm' vibe whereas Bodzin plays a bit harder, but both artists have great party music. Therefore, I want to investigate if there are any similarities between these artists, so I can find out if there are specific features which makes me love them. I will do this by analyzing their Spotify API for simmilarities and differences in parameters. 
+However these artists have a very different style, they are both one of my favourites, and I can keep listening to them at any moment of day. I have seen both artists live, they play their music live (i.e. not just mixing their music but live performing it) and both times they delivered an amazing rave with everyone dancing.  
 
-My corpus consists of the two playlists I made, one with Bicep's songs and one with Stephan Bodzin's songs. 
+I want to investigate if there are any similarities between these artists, so I can find out if there are specific features which makes me love them. I will do this by analyzing their Spotify API for similarities and differences in different parameters. 
+
+My corpus consists of two playlists I made, one with Bicep's music and one with Stephan Bodzin's music. In total these are 55 songs.   
 
 ***
 
@@ -537,6 +538,7 @@ bodzin_juice <-
   juice() %>%
   column_to_rownames("track.name")
 
+
 bodzin_dist <- dist(bodzin_juice, method = "euclidean")
 
 bidzin_dendo <- bodzin_dist %>% 
@@ -598,6 +600,25 @@ bicep_juice <-
   juice() %>%
   column_to_rownames("track.name")
 
+bicep_juice2 <-
+  recipe(
+    track.name ~
+      danceability +
+      
+      C + `C#|Db` + D + `D#|Eb` +
+      E + `F` + `F#|Gb` + G +
+      `G#|Ab` + A + `A#|Bb` + B +
+      c01 + c02 + c03 + c04 + c05 + c06 +
+      c07 + c08 + c09 + c10 + c11 + c12,
+    data = bicep_3
+  ) %>%
+  step_center(all_predictors()) %>%
+  step_scale(all_predictors()) %>% 
+  # step_range(all_predictors()) %>% 
+  prep(bicep_3 %>% mutate(track.name = str_trunc(track.name, 20))) %>%
+  juice() %>%
+  column_to_rownames("track.name")
+
 
 bicep_dist <- dist(bicep_juice, method = "euclidean")
 
@@ -618,7 +639,7 @@ These dendrograms use the track level features of timbre, danceability, energy, 
 
 Within the Bodzin dendogram there are some small clusters. For example Collider, Breathe and LLL form a cluster. Some other small cluster of around 2 / 3 songs are in the dendogram, but this is nothing of significant similarity. 
 
-The Biceo dendogram shows the same type of smaller clustering.Here, most cluster are even 2 songs. 
+The Bicep dendogram shows the same type of smaller clustering.Here, most cluster are even 2 songs. 
 
 Clearly, both dendograms don't show any big clustering of songs. This shows that within both artists' music, songs differ quite a lot from one another if we look at a combination of Spotify API characteristics. 
 
@@ -627,17 +648,15 @@ Clearly, both dendograms don't show any big clustering of songs. This shows that
 
 ### Conclusion and Discussion
 
+From the research done in this portfolio, I have learned several things about the similarities between Bodzin’s and Bicep’s music, and therefore got to know more about what I appreciate about these artists. 
 
-***
-From the research done in this portfolio, I can conclude several things about the similarities between Bodzin’s and Bicep’s music, and got to know more about what I appreciate about these artists. 
+First of all, the average Valence / Energy is similar in the music both artist. These two features make up a great part of the overall atmosphere in a song. The atmosphere in the music of Bicep and Bodzin is both going towards ‘angry and turbulent’. Clearly, I like angry music. 
 
-First of all, the Valence / Energy measure is very similar in both artist. This makes the atmosphere of their music tend towards ‘angry and turbulent’. 
+Another correspondence in both Bicep’s and Bodzin’s music can be seen in their Self Similarity Matrices (SSM’s). Their music shows a lot of difference within each song. This is visible in the SSM on timbre and the SSM on chroma features. Therefore, in both artists' music there was quite a big variance in timbre and chroma within the songs. I interpret this variance as a reason that I can keep listening to their songs, never getting tired of them. 
 
-Another correspondence in both Bicep’s and Bodzin’s music could be seen from their SSM’s. Their music shows a lot of difference within the songs. This is visible in the SSM on timbre and the SSM on chroma. I interpret this variance as a reason that I can keep listening to their songs. 
+From the dendrograms (made of features: danceability, energy, loudness, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration it became visible that there is not much clustering between the songs of both of both artists, which means that the songs of both artists don’t sound similar. This could be another reason why the music keeps exciting me. 
 
-From the dendrograms was visible that there is not much clustering between the songs of both of both artists, which means that the songs of both artists don’t sound similar. This could be another reason why the music keeps exciting me. 
-
-Only from the key grams I could not find a clear similarity between the artists: the C minor and A minor are significantly prevailing in Biceps music. The G major and A# minor are prevailing in Bodzins music. 
+Lastly, From the key grams I could not find a clear similarity between the artists: the C minor and A minor are significantly prevailing in Biceps music. The G major and A# minor are prevailing in Bodzins music. 
 
 
 
@@ -645,6 +664,5 @@ Sources:
 
 1. https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features 
 2. https://interlude.hk/feel-key-cminor#:~:text=According%20to%20Pauer%2C%20C%20minor,the%20portraiture%20of%20the%20supernatural
-
 3. https://ledgernote.com/blog/interesting/musical-key-characteristics-emotions/ 
 
