@@ -149,7 +149,7 @@ icebowl_1 <- icebowl %>%
   coord_fixed() +
   scale_fill_viridis_c(guide = "none") +
   theme_classic() +
-  labs(x = "", y = "") + ggtitle("Icebowl by Bicep - timbre SSM")
+  labs(x = "", y = "") + ggtitle("Icebowl - timbre SSM")
 
 icebowl_2 <- icebowl %>%
   compmus_self_similarity(pitches, "cosine") %>% 
@@ -166,7 +166,7 @@ icebowl_2 <- icebowl %>%
   coord_fixed() +
   scale_fill_viridis_c(guide = "none") +
   theme_classic() +
-  labs(x = "", y = "") + ggtitle("Icebowl by Bicep - chroma SSM")
+  labs(x = "", y = "") + ggtitle("Icebowl - chroma SSM")
 
 
 river <-
@@ -204,7 +204,7 @@ river_1 <- river %>%
   coord_fixed() +
   scale_fill_viridis_c(guide = "none") +
   theme_classic() +
-  labs(x = "", y = "") + ggtitle("River by Stephan Bodzin - timbre SSM") 
+  labs(x = "", y = "") + ggtitle("River - timbre SSM") 
 
 river_2 <- river %>%
   compmus_self_similarity(pitches, "cosine") %>% 
@@ -221,7 +221,7 @@ river_2 <- river %>%
   coord_fixed() +
   scale_fill_viridis_c(guide = "none") +
   theme_classic() +
-  labs(x = "", y = "") + ggtitle("River by Stephan Bodzin - chroma SSM") 
+  labs(x = "", y = "") + ggtitle("River - chroma SSM") 
 
 
 grid.arrange(icebowl_1, icebowl_2, river_1, river_2)
@@ -239,11 +239,11 @@ One of the reasons I keep wanting to listen to both artists is because I never g
 In a self-similarity matrix, yellow shows variance and more blue shows similarity. These self similarity matrices focus on 1) timbre and on 2) chroma. According to the Spotify API, **timbre** is the quality of a musical note or sound that distinguishes different types of musical instruments, or voices. It is a complex notion also referred to as sound color, texture, or tone quality, and is derived from the shape of a segment’s spectro-temporal surface, independently of pitch and loudness. The second SSM looks at **pitches**. Pitch content is given by a “chroma” vector, corresponding to the 12 pitch classes C, C#, D to B, with values ranging from 0 to 1 that describe the relative dominance of every pitch in the chromatic scale. For example a C Major chord would likely be represented by large values of C, E and G (i.e. classes 0, 4, and 7).
 
 
-**Ice Bowl** 
+**Ice Bowl, by Bicep** 
 The first SSM's are of one of my favourite songs of Bicep, Icebowl. It's timbre SSM is quite messy with small squares, big squares and rectangles in it. This refers to a lot of differene within it's timbre. It's chroma SSM is fairly yellow as well (referring to variety) and there are no equal square patterns in it. This indicates a lot of variance and little repetition during this song.
 
 
-**River**
+**River, by Stephan Bodzin**
 The second and third SSM are of the song River by Stephan Bodzin. The timbre SSM is less messy: the left, right, top and bottom ends look quite the similar and show a bit lighter colors which indicates more heterogeinity. The middle has small squares all showing darker colors indicating more similarity. Especially at the end of the song there is more difference: there is a clear yellow band at the end of the graph. It's pitch SSM is super yellow, so there is a large variance in chroma features throughout this song. 
 
 It is clear that both SSM's from the songs Icebowl and River have shown a lot of variance. This is shown by looking at the SSM for timbre and the SSM for pitches. This variance could be a reason why I can keep listening to these songs!
@@ -311,14 +311,18 @@ grid.arrange(glue_graph, singularity_graph)
 ***
 On the left are two chromagrams outliers, one of both artists. I think of these songs as ‘outliers’ because they are by far the most popular songs of both artists so I thought it would be interesting to look if there are certain extraordinary properties or similarities within their chromagrams. 
 
-**Glue** First chromagram is from the song Glue by Bicep. In the first part of the song, until 80 seconds, a lot of different keys are lighting up in the chromagram: A, G#|Ab, G, F#|Gb. This might be because the first part of the song consists of a break beat.  
+**Glue, by Bicep** First chromagram is from the song Glue by Bicep. In the first part of the song, until 80 seconds, a lot of different keys are lighting up in the chromagram: A, G#|Ab, G, F#|Gb. This might be because the first part of the song consists of a break beat.  
 
 as the song is building up more elements are added (a high voice and other electronic sounds). This makes the chromagram light up for others keys as well: D light up around 90 seconds, and E lights up a little bit after 100 seconds.
 
 An extraordinary part in the chromagram is the yellow (high magnitude) 'band' in the middle of the chromagram. This represents the high-pitched vocals, which is characteristic of the song Glue. 
 
-**Singularity** The second chromagram is of the most popular Stephan Bodzin song, namely ’Singularity’. It is clear from the chromagram that the throughout the whole song there is a high magnitude on the G#|Ab, A and B notes. This forms a yellow ‘band’ on the top of the chromagram. This represents the repeating bass-synth rhythm which is only composed of two chords plus the typical Bodzin-style synthesizers (this will be very clear when you listen to the song). 
+**Singularity, by Stephan Bodzin** The second chromagram is of the most popular Stephan Bodzin song, namely ’Singularity’. It is clear from the chromagram that the throughout the whole song there is a high magnitude on the G#|Ab, A and B notes. This forms a yellow ‘band’ on the top of the chromagram. This represents the repeating bass-synth rhythm which is only composed of two chords plus the typical Bodzin-style synthesizers (this will be very clear when you listen to the song). 
 What makes this song so special is that the built-up is actually very simple and keeps repeating; there are some high pitches throughout the songs but the basis is really these two chords. This makes the chromagram way more clear than the Bicep chromagram. 
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2aJDlirz6v2a4HREki98cP?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/0yuJtvXsapVOQfNDYxQ5mw?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
 
 
 
@@ -455,7 +459,7 @@ The G major and A# minor are prevailing in Bodzins music. G major is expressing 
 
 Also I plotted two keygrams, one of both artists, to see whether these songs reflect the most typical keys of the artist. The keygram of Sundial shows a lot of yellow, which means a lot of energy in different keys. This song is not a typical one since it does not reflect the C minor and A minor clearly. Therefore Sundial can be seen as an outlier. 
 
-The keygram of Sputnik 
+The keygram of Sputnik shows a lot of energy in the D major key near the end of the song. The beginning is mostly A major and F# minor. This could be considered an outlier as well.
 
 ### Tempograms
 
@@ -473,6 +477,8 @@ drift %>%
 ```
 
 ***
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5xvHKh0QAbzYUUiazFGnAD?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
 
 This is an extraordinary tempogram of outlier 'Drift' by Bicep. The line throughout the whole tempogram makes it very interesting to analyze. 
 
