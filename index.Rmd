@@ -49,18 +49,19 @@ river_bodzin <-
 ### Introduction
 
 **Introducing my theme**
-For my portfolio, I will be analyzing the songs of two of my alltime favourite artists: the duo Bicep and Stephan Bodzin. 
+For my portfolio, I will be analyzing the songs of two of my favorite artists: Bicep and Stephan Bodzin. 
 
-Both Bicep and Stephan Bodzin are an electronic artists. Their music is in the techno genre. They both have their own characteristic style. One can immediately recognize a song from Bicep or a song from Stephan Bodzin.
+Both Bicep and Stephan Bodzin are an electronic music artists. They both have their own very characteristic style. One can immediately recognize a song from Bicep or a song from Stephan Bodzin.
 
-Bodzins songs typically are baseline driven, emotive and have a hypnotic synth. Biceps songs often have a shuffling beat, subtle bass and soaring vocals, a surefire way to get any rave absolutely heaving.
+Bodzin's music is typically baseline driven and emotive, with a hypnotic synth. Bicep's music often has oftenly a shuffling beat, subtle bass and soaring vocals.
+
 
 **Techno, Bodzin and Bicep**
-Techno is a genre of electronic dance music, characterized by a repetitive four on the floor beat, which is generally produced for use in a continuous DJ set. The central rhythm is often in 4/4 and the tempo typically varies between 120 and 150 beats per minute (bpm). Artists may use electronic instruments such as drum machines, sequencers, and synthesizers (source 4).
+Both artists are in the techno genre. Techno is a genre of electronic dance music, characterized by a repetitive four on the floor beat, which is generally produced for use in a continuous DJ set. The central rhythm is often in 4/4 and the tempo typically varies between 120 and 150 beats per minute (bpm). Artists may use electronic instruments such as drum machines, sequencers, and synthesizers (source 4).
 
-Even though they are in the same genre, these artists have a very different style. Both are one of my favourites, and I can keep listening to them at any moment of day. I have seen both artists live, they play their music live (i.e. not just mixing their music but live performing it) and both times they delivered an amazing rave with everyone dancing. I wonder how this similar feeling can be caused by two artists that play such different music.  
+Even though they are in the same genre, these artists have a very different style. Both are one of my favorites, and I can keep listening to them at any moment of day. I have seen both artists live, they play their music live (i.e. not just mixing their music but live performing it) and both times they delivered an amazing rave with everyone dancing. I wonder how this similar feeling can be caused by two artists that play such different music.  
 
-Therefore, I want to investigate if there are any similarities in the music of these artists, so I can find out if there are specific features which makes me love them. I will do this by analyzing the Spotify API for similarities and differences in different parameters. 
+Therefore, I want to investigate if there are any similarities in the music of these artists, so I can find out if there are specific features which makes me love them. I will do this by analyzing the Spotify API for similarities and differences in several aspects. 
 
 **Corpus** 
 My corpus consists of two playlists I made, one with Bicep's music and one with Stephan Bodzin's music. In total these are 55 songs.   
@@ -94,9 +95,9 @@ ggplot(aes(x = valence, y = energy, color = artist_name)) +
 
 This graph gives a global analysis of the overall atmoshphere of the music of both artists. This is measured in terms of energy and valence.
 
-According to the Spotify API, **Energy** is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.
+According to the Spotify API, **Energy** is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy (source 1).
 
-**Valence** is a measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
+**Valence** is a measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry), (source 1).
 
 
 Both Bicep's and Bodzin's songs are mostly in the Turbulent / Angry section. Bodzins' songs also often lay in the sad/depressing segment. This is interesting since they both play at big festivals where the vibe is definitely not depressing. It also shows that almost all of their songs have a high energy: most of them around the 0.75. Overall both artists have a relatively low valence. 
@@ -231,7 +232,7 @@ On the left are four self-similarity matrices with a song from both artists. An 
 
 One of the reasons I keep wanting to listen to both artists is because I never get tired from listening to their songs, they never bore me. Therefore it is interesting to look at their self similarity matrices, which shows whether a song has a lot of differing parts or not. A lot of difference within a song could clarify why they never get boring. 
 
-In a self-similarity matrix, yellow shows variance and more blue shows similarity. These self similarity matrices focus on 1) timbre and on 2) chroma. According to the Spotify API, **timbre** is the quality of a musical note or sound that distinguishes different types of musical instruments, or voices. It is a complex notion also referred to as sound color, texture, or tone quality, and is derived from the shape of a segment’s spectro-temporal surface, independently of pitch and loudness. The second SSM looks at **pitches**. Pitch content is given by a “chroma” vector, corresponding to the 12 pitch classes C, C#, D to B, with values ranging from 0 to 1 that describe the relative dominance of every pitch in the chromatic scale. For example a C Major chord would likely be represented by large values of C, E and G (i.e. classes 0, 4, and 7).
+In a self-similarity matrix, yellow shows variance and more blue shows similarity. These self similarity matrices focus on 1) timbre and on 2) chroma. According to the Spotify API, **timbre** is the quality of a musical note or sound that distinguishes different types of musical instruments, or voices. It is a complex notion also referred to as sound color, texture, or tone quality, and is derived from the shape of a segment’s spectro-temporal surface, independently of pitch and loudness. The second SSM looks at **pitches**. Pitch content is given by a “chroma” vector, corresponding to the 12 pitch classes C, C#, D to B, with values ranging from 0 to 1 that describe the relative dominance of every pitch in the chromatic scale. For example a C Major chord would likely be represented by large values of C, E and G (i.e. classes 0, 4, and 7), (source 1). 
 
 
 **Ice Bowl, by Bicep** 
@@ -448,9 +449,14 @@ grid.arrange(sundial_keygram, sputnik_keygram)
 
 
 ***
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/3gCurfVJRI2d5vov0eF6ka?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/00BsCMMLOc0djHZWRm8Dlg?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
 Below are two histograms of keys for both Bicep and Bodzin playlists. Clearly, the C minor and A minor are significantly prevailing in Biceps music.According to Pauer, C minor is the key that is expressive of softness, longing, sadness, solemnity, dignified earnestness, and a passionate intensity. It lends itself most effectively to the portraiture of the supernatural (source https://interlude.hk/feel-key-c-minor/#:~:text=According%20to%20Pauer%2C%20C%20minor,the%20portraiture%20of%20the%20supernatural).
 
-The G major and A# minor are prevailing in Bodzins music. G major is expressing the Serious, Magnificent and fantasy (source https://ledgernote.com/blog/interesting/musical-key-characteristics-emotions/). If would say this is reflected in Bodzins' music: his songs sound extraterrestrial which I would say is mainly caused by his characteristic base sound. 
+The G major and A# minor are prevailing in Bodzins music. G major is expressing the Serious, Magnificent and fantasy (source 2). If would say this is reflected in Bodzins' music: his songs sound extraterrestrial which I would say is mainly caused by his characteristic base sound. 
 
 Also I plotted two keygrams, one of both artists, to see whether these songs reflect the most typical keys of the artist. The keygram of Sundial shows a lot of yellow, which means a lot of energy in different keys. This song is not a typical one since it does not reflect the C minor and A minor clearly. Therefore Sundial can be seen as an outlier. 
 
